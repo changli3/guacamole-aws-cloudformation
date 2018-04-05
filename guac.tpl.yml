@@ -1,0 +1,45 @@
+
+AWSTemplateFormatVersion : 2010-09-09
+Description: Apache Guacamole Server
+Parameters:
+  Ami:
+    Type: String
+    Default: ami-f4cc1de2 
+  InstanceTypeParameter:
+    Type: String
+    Default: t2.small
+  InstanceSubnet:
+    Type: String
+    Default: subnet-2b976000
+  SecurityGroupId:
+    Type: String
+    Default: sg-58e1fc3d
+  InstanceKeyPairParameter:
+    Type: String
+    Default: TreaEBSLab
+    Description: Name of the KeyPair you choose to use to ssh into the box    
+Resources:
+  Ec2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId:
+        Ref: Ami
+      KeyName:
+        Ref: InstanceKeyPairParameter
+      InstanceType:
+        Ref: InstanceTypeParameter
+      SecurityGroupIds:
+        - !Ref SecurityGroupId
+      SubnetId:
+        Ref: InstanceSubnet
+      Tags:
+        -
+          Key: Name
+          Value: Apache Guacamole Server
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash -xe
+          apt-get update -y
+          yes | sudo apt-get install -y guacamole-tomcat libguac-client-ssh0 libguac-client-rdp0
+          sudo /etc/init.d/guacd start
+          sudo /etc/init.d/tomcat8 restart
