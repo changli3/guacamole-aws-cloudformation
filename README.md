@@ -37,8 +37,8 @@ Login with the provided userName and password:
 ![Login Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/login.JPG "Login Screen")
 
 ### Dashboard Screen
-Once login, click on one of the resources:
-![Dashboard Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/dash.JPG "Dashboard Screen")
+Once login, click on one of the predefined connection resources:
+![Dashboard Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/dashbd.JPG "Dashboard Screen")
 
 ### RDP Screen
 You can see the RDP screen comes up:
