@@ -53,8 +53,7 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install.sh | sudo bash -s ${mysqlRootPassword} ${mysqlGuacaPassword} ${GuacadminUser} ${GuacadminPassword}
-
+          #curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install.sh | sudo bash -s ${mysqlRootPassword} ${mysqlGuacaPassword} ${GuacadminUser} ${GuacadminPassword} > 
 Outputs:
   GuacamoleServer:
     Description: The web front URL to view the GuacamoleServer

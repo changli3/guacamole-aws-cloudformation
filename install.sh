@@ -3,9 +3,7 @@ apt -y update
 apt -y upgrade
 apt -y dist-upgrade
 
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
-echo | add-apt-repository ppa:webupd8team/java
 
 export MYSQLROOTPASSWORD="$1"
 export GUACAPASSWORD="$2"
@@ -15,11 +13,10 @@ export GUACADMINPASSWORD="$4"
 
 debconf-set-selections <<< "mysql-server mysql-server/root_password password $MYSQLROOTPASSWORD"
 debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $MYSQLROOTPASSWORD"
-debconf-set-selections <<< "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true"
 
 apt -y install libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev \
 libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev git build-essential autoconf libtool tomcat8 \
-oracle-java8-installer tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-server mysql-client mysql-common mysql-utilities libpulse-dev \
+tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-server mysql-client mysql-common mysql-utilities libpulse-dev \
 libvorbis-dev freerdp ghostscript wget
 
 # create directories
@@ -36,11 +33,12 @@ cd /opt
 # install guacamole server
 git clone https://github.com/apache/incubator-guacamole-server.git
 
-
 cd incubator-guacamole-server/
+apt -y install autoconf
 autoreconf -fi
 ./configure --with-init-dir=/etc/init.d
-make && make install
+make
+make install
 ldconfig
 systemctl enable guacd
 
