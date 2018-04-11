@@ -1,0 +1,8 @@
+<user-mapping>
+    <authorize username="chang.li3@treasury.gov" password="changeme!!!">
+        <connection name="myWindowsBastion">
+            <protocol>rdp</protocol>
+            <param name="hostname">trlabmgt01</param>
+        </connection>
+    </authorize>
+</user-mapping>

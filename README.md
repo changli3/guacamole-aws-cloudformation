@@ -14,19 +14,11 @@ git clone https://github.com/changli3/guacamole-aws-cloudformation.git
 cd guacamole-aws-cloudformation
 
 aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
-	ContentAdminPassword=admin123 \
-	ContentAdminUser=admin \
-	KeyPairName=TreaEBSLab \
-	RegEmail=chang.li3@treasury.gov \
-	RegFirstName=Chang \
-	RegLastName=Li \
-	AmiImageId=ami-e443379e \
-	InstanceSubnet=subnet-2b976000 \
-	InstanceSecurityGroup=sg-58e1fc3d \
-    TableauServerLicenseKey= \
-	TableauServerExe="https://downloads.tableau.com/esdalt/10.5.0/TableauServer-64bit-10-5-0.exe" \
-    TableauServerCrt="https://s3.amazonaws.com/trlab-templates/tableau.crt" \
-    TableauServerKey="https://s3.amazonaws.com/trlab-templates/tableau.key"  \
+	Ami=ami-f4cc1de2  \
+    InstanceTypeParameter=t2.small \
+    InstanceSubnet=subnet-2b976000 \
+    SecurityGroupId=sg-58e1fc3d \
+    InstanceKeyPairParameter=TreaEBSLab \
     --template-file guac.tpl.yml
 ```
 

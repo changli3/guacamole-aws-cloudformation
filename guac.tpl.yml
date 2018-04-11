@@ -41,5 +41,6 @@ Resources:
           #!/bin/bash -xe
           apt-get update -y
           yes | sudo apt-get install -y guacamole-tomcat libguac-client-ssh0 libguac-client-rdp0
+          sudo curl -o /etc/guacamole/user-mapping.xml https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/user-mapping.xml
           sudo /etc/init.d/guacd start
           sudo /etc/init.d/tomcat8 restart
