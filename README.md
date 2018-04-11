@@ -30,16 +30,24 @@ aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
 ```
 
 ## Access
-Please wait for about 15 minutes for the installation to finish. Then go to http://private-Ip/guacamole and login with the provided userName and password.
+Please wait for about 15 minutes for the installation to finish. Then go to http://private-Ip/guacamole and login with the provided GuacadminUser and GuacadminPassword.
 
 ### Login Screen
-Login with the provided userName and password:
+Login with the provided GuacadminUser and GuacadminPassword:
 ![Login Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/login.JPG "Login Screen")
 
 ### Dashboard Screen
 Once login, click on one of the predefined connection resources:
 ![Dashboard Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/dashbd.JPG "Dashboard Screen")
 
+### Settings
+From dropdown of the user name, select Settings, and then Connections tab:
+![Settings Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/settings.JPG "Settings Screen")
+
+### Add a RDP Connection
+Click "New Connection", and then enter name, select RDP protocal and enter newwork IP address (or name):
+![New Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/rdpconfig.JPG "New Screen")
+
 ### RDP Screen
-You can see the RDP screen comes up:
+Save the connection, from dropdown of the user name, select "Home" and then click the newly created RDP connection:
 ![RDP Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/rdp.JPG "RDP Screen")

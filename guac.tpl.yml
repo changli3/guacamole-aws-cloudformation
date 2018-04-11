@@ -19,15 +19,18 @@ Parameters:
     Type: String
     Default: TreaEBSLab
     Description: Name of the KeyPair you choose to use to ssh into the box    
-  UserName:
+  mysqlRootPassword:
     Type: String
-    Default: chang.li3@treasury.gov
-  Password:
+    Default: mysqlRootPassword
+  mysqlGuacaPassword:
     Type: String
-    Default: changeme!!!
-  RdpBastion01:
+    Default: mysqlGuacaPassword
+  GuacadminUser:
     Type: String
-    Default: trlabmgt01.treasury.lab
+    Default: guacaadmin
+  GuacadminPassword:
+    Type: String
+    Default: guacaadmin
 
 Resources:
   GuacamoleServer:
@@ -46,11 +49,11 @@ Resources:
       Tags:
         -
           Key: Name
-          Value: Apache Guacamole Server
+          Value: Guacamole Server w/ mySQL JDBC Auth
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install.sh | sudo bash -s ${UserName} ${Password} ${RdpBastion01}
+          curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install.sh | sudo bash -s ${mysqlRootPassword} ${mysqlGuacaPassword} ${GuacadminUser} ${GuacadminPassword}
 
 Outputs:
   GuacamoleServer:

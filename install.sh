@@ -1,14 +1,25 @@
 # install required packages
-add-apt-repository ppa:webupd8team/java
 apt -y update
 apt -y upgrade
 apt -y dist-upgrade
 
 DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
+echo | add-apt-repository ppa:webupd8team/java
+
+export MYSQLROOTPASSWORD="$1"
+export GUACAPASSWORD="$2"
+export GUACADMIN="$3"
+export GUACADMINPASSWORD="$4"
+
+
+debconf-set-selections <<< "mysql-server mysql-server/root_password password $MYSQLROOTPASSWORD"
+debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $MYSQLROOTPASSWORD"
+debconf-set-selections <<< "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true"
+
 apt -y install libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev \
-libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev git build-essential autoconf libtool oracle-java8-installer tomcat8 \
-tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-server mysql-client mysql-common mysql-utilities libpulse-dev \
+libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev git build-essential autoconf libtool tomcat8 \
+oracle-java8-installer tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-server mysql-client mysql-common mysql-utilities libpulse-dev \
 libvorbis-dev freerdp ghostscript wget
 
 # create directories
@@ -25,7 +36,6 @@ cd /opt
 # install guacamole server
 git clone https://github.com/apache/incubator-guacamole-server.git
 
-DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" upgrade
 
 cd incubator-guacamole-server/
 autoreconf -fi
@@ -51,28 +61,31 @@ cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /etc/guacamol
 ln -s /usr/local/lib/freerdp/* /usr/lib/x86_64-linux-gnu/freerdp/.
 
 # configure mysql for guacamole
-echo "mysql-hostname: localhost" >> /etc/guacamole/guacamole.properties
+echo "mysql-hostname: localhost" > /etc/guacamole/guacamole.properties
 echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: guacamole_db" >> /etc/guacamole/guacamole.properties
 echo "mysql-username: guacamole_user" >> /etc/guacamole/guacamole.properties
-echo "mysql-password: PASSWORD" >> /etc/guacamole/guacamole.properties
+echo "mysql-password: $GUACAPASSWORD" >> /etc/guacamole/guacamole.properties
 
 # link guacamole dir to tomcat
 rm -rf /usr/share/tomcat8/.guacamole
 ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
-service tomcat8 restart
 
-# provision the guacamole database
-mysql -u root -pMYSQLROOTPASSWORD
+
+echo "
 create database guacamole_db;
-create user 'guacamole_user'@'localhost' identified by 'PASSWORD';
+create user 'guacamole_user'@'localhost' identified by '$GUACAPASSWORD';
 GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
 flush privileges;
 quit
-cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u root \
--pMYSQLROOTPASSWORD guacamole_db
+" | tee init_db.sql
 
-# TODO: include instructions for ldap integration
+# provision the guacamole database
+mysql -u root --password="$MYSQLROOTPASSWORD" < init_db.sql
+
+cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u root -password="$MYSQLROOTPASSWORD" guacamole_db
+
+mysql -u root --password="$MYSQLROOTPASSWORD" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))"
 
 systemctl restart guacd
 systemctl restart tomcat8
