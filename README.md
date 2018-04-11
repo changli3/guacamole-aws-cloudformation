@@ -18,7 +18,7 @@ git clone https://github.com/changli3/guacamole-aws-cloudformation.git
 cd guacamole-aws-cloudformation
 
 aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
-	Ami=ami-f4cc1de2  \
+	Ami=ami-43a15f3e  \
     InstanceTypeParameter=t2.small \
     InstanceSubnet=subnet-2b976000 \
     SecurityGroupId=sg-58e1fc3d \
@@ -30,7 +30,7 @@ aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
 ```
 
 ## Access
-Please wait for about 15 minutes for the installation to finish. Then go to http://pricateIp/guacamole and login with the provided userName and password.
+Please wait for about 15 minutes for the installation to finish. Then go to http://private-Ip/guacamole and login with the provided userName and password.
 
 ### Login Screen
 Login with the provided userName and password:

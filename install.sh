@@ -1,4 +1,6 @@
-printf 'yes' | apt-get install -y guacamole-tomcat libguac-client-ssh0 libguac-client-rdp0
+apt-get update -y
+yes | apt-get install -y guacamole-tomcat
+apt-get install -y libguac-client-ssh0 libguac-client-rdp0
 
 echo "
 <user-mapping>

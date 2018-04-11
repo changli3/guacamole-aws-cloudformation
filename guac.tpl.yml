@@ -4,7 +4,8 @@ Description: Apache Guacamole Server
 Parameters:
   Ami:
     Type: String
-    Default: ami-f4cc1de2 
+    Default: ami-43a15f3e
+    Description: Please provide an AWS Ubuntu image id
   InstanceTypeParameter:
     Type: String
     Default: t2.medium
@@ -49,7 +50,6 @@ Resources:
       UserData:
         Fn::Base64: !Sub |
           #!/bin/bash -xe
-          apt-get update -y
           curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install.sh | sudo bash -s ${UserName} ${Password} ${RdpBastion01}
 
 Outputs:
