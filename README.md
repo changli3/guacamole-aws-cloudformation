@@ -23,9 +23,10 @@ aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
     InstanceSubnet=subnet-2b976000 \
     SecurityGroupId=sg-58e1fc3d \
     InstanceKeyPairParameter=TreaEBSLab \
-    UserName=testUser \
-    Password=changeme!!! \
-    RdpBastion01=testRdpServer \
+    mysqlRootPassword=mysqlRootPassword \
+    mysqlGuacaPassword=mysqlGuacaPassword \
+    GuacadminUser=guacaadmin \
+    GuacadminPassword=guacaadmin \
     --template-file guac.tpl.yml
 ```
 
