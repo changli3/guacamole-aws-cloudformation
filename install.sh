@@ -42,6 +42,7 @@ make install
 ldconfig
 systemctl enable guacd
 
+apt-get -y install openjdk-8-jdk
 
 # install guacamole client (web app)
 cd /opt
@@ -81,7 +82,7 @@ quit
 # provision the guacamole database
 mysql -u root --password="$MYSQLROOTPASSWORD" < init_db.sql
 
-cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u root -password="$MYSQLROOTPASSWORD" guacamole_db
+cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u root --password="$MYSQLROOTPASSWORD" guacamole_db
 
 mysql -u root --password="$MYSQLROOTPASSWORD" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))"
 
