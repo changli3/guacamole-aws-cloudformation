@@ -7,7 +7,7 @@ I wanted to start a project to set up an array of Guacamole servers that can be 
 
 
 
-I have a standalone Guacamole Server which use local mysql as authentication and authorization source. And a cluster with Autoscaled Guacamole Servers and RDS on the backend. While this works for a lot people but not us since we need to support SAML/PIV authentication.
+I have set up a standalone Guacamole Server which use local mysql as authentication and authorization source and a cluster with Autoscaled Guacamole Servers and RDS on the backend. While this works for a lot people but not us since we need to support SAML/PIV authentication.
 ![Guacamole Cluster](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/cluster.JPG "Guacamole Cluster")
 
 ## Launch Standalone Guacamole Server
