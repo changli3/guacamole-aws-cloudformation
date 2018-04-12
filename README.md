@@ -10,7 +10,7 @@ I wanted to start a project to set up an array of Guacamole servers that can be 
 I have set up a standalone Guacamole Server which use local mysql as authentication and authorization source and a cluster with Autoscaled Guacamole Servers and RDS on the backend. While this works for a lot people but not us since we need to support SAML/PIV authentication.
 ![Guacamole Cluster](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/cluster.JPG "Guacamole Cluster")
 
-## Launch Standalone Guacamole Server
+# Launch Standalone Guacamole Server
 
 ```
 git clone https://github.com/changli3/guacamole-aws-cloudformation.git
@@ -53,5 +53,8 @@ Click "New Connection", and then enter name, select RDP protocal and enter newwo
 Save the connection, from dropdown of the user name, select "Home" and then click the newly created RDP connection:
 ![RDP Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/rdp.JPG "RDP Screen")
 
-## Launch Standalone Guacamole Server Cluster
+# Launch Guacamole Server Cluster with RDS Backend
+working on the cloudformation template and scripts....
+
+# Launch Guacamole Server Cluster with RDS/LDAP Backend and SAML SSO
 working on the cloudformation template and scripts....
