@@ -2,15 +2,15 @@
 
 ## Prelaunch Notes
 
-I wanted to start a project to set up an array of Guacamole servers that can be authenticated via SAML and authorized through LDAP groups. Just started and still working on it.
+I wanted to start a project to set up an array of Guacamole servers that can be authenticated via SAML and authorized through LDAP groups and/or database settings. The targeted architecture:
+![targeted architecture](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/final.JPG "targeted architecture") -- working on this.
 
 
 
+I have a standalone Guacamole Server which use local mysql as authentication and authorization source. And a cluster with Autoscaled Guacamole Servers and RDS on the backend. While this works for a lot people but not us since we need to support SAML/PIV authentication.
+![Guacamole Cluster](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/cluster.JPG "Guacamole Cluster")
 
-Right now, it just stands up a Guacamole Server with no configuration yet.
-
-
-## Usage
+## Launch Standalone Guacamole Server
 
 ```
 git clone https://github.com/changli3/guacamole-aws-cloudformation.git
@@ -30,7 +30,7 @@ aws cloudformation deploy --stack-name GuacamoleSvr01 --parameter-overrides \
     --template-file guac.tpl.yml
 ```
 
-## Access
+### Access
 Please wait for about 15 minutes for the installation to finish. Then go to http://private-Ip/guacamole and login with the provided GuacadminUser and GuacadminPassword.
 
 ### Login Screen
@@ -52,3 +52,6 @@ Click "New Connection", and then enter name, select RDP protocal and enter newwo
 ### RDP Screen
 Save the connection, from dropdown of the user name, select "Home" and then click the newly created RDP connection:
 ![RDP Screen](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/rdp.JPG "RDP Screen")
+
+## Launch Standalone Guacamole Server Cluster
+working on the cloudformation template and scripts....

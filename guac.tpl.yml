@@ -1,6 +1,6 @@
 
 AWSTemplateFormatVersion : 2010-09-09
-Description: Apache Guacamole Server
+Description: Apache Guacamole Server by chang.li3@treasury.gov
 Parameters:
   Ami:
     Type: String
