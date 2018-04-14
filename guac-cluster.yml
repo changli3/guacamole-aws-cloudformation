@@ -37,7 +37,7 @@ Parameters:
   VpcId:
     Type: AWS::EC2::VPC::Id
   Sg:
-    Type: AWS::EC2::SecurityGroup
+    Type: AWS::EC2::SecurityGroup::Id
 
   AllowIPs:
     Type: String
@@ -279,7 +279,7 @@ Resources:
           Fn::Sub: |
             #cloud-config
             runcmd:
-            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootUser} ${mysqlRootUserPassword} ${GuacadminUser} ${GuacadminPassword}  ${!GetAtt DbInstance.Endpoint.Address} ${!GetAtt DbInstance.Endpoint.Port}
+            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootUser} ${mysqlRootUserPassword} ${GuacadminUser} ${GuacadminPassword}  ${"Fn::GetAtt": ["DbInstance","Endpoint.Address"]} ${"Fn::GetAtt": ["DbInstance","Endpoint.Port"]}
 
   CpuUtilization:
     Type: AWS::AutoScaling::ScalingPolicy
@@ -393,46 +393,17 @@ Resources:
       Namespace: AWS/EC2
       Threshold: '1'
 
-  GuacamoleSecurityGroup:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription: Elb Allowed Ports
-      VpcId: !Ref VpcId
-
-  GuacamoleSecurityGroupElbHttpTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    DependsOn:
-    - GuacamoleSecurityGroup
-    Properties:
-      GroupId: !Ref 'GuacamoleSecurityGroup'
-      IpProtocol: tcp
-      FromPort: '80'
-      ToPort: '80'
-      CidrIp: !Ref AllowIPs
-
-  GuacamoleSecurityGroupElbAllTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    DependsOn:
-    - GuacamoleSecurityGroup
-    Properties:
-      GroupId: !Ref 'GuacamoleSecurityGroup'
-      IpProtocol: tcp
-      FromPort: '443'
-      ToPort: '443'
-      CidrIp: !Ref AllowIPs
 
   ElbGuacamole:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
-    DependsOn:
-    - GuacamoleSecurityGroup
     Properties:
       LoadBalancerName:
         Fn::Sub: ${AWS::StackName}
-      Scheme: internet-facing
+      Scheme: internal
       Subnets: 
       - !Ref SubnetID1
       - !Ref SubnetID2
-      SecurityGroups: [ !Ref GuacamoleSecurityGroup, !Ref Sg ]
+      SecurityGroups: [ !Ref Sg ]
       HealthCheck:
         Target:
           Fn::Join:
