@@ -55,6 +55,7 @@ Parameters:
     Default: guacaadmin
 
   AllocatedStorage:
+    Type: Number
     Description: Allocated Storage for RDS in GB
     Default: 1
 
@@ -184,7 +185,7 @@ Resources:
       FromPort: '0'
       ToPort: '65535'
       CidrIp: !Ref GuacamoleSecurityGroup
-	  
+   
   SgHTTPTrafficports:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
@@ -202,7 +203,7 @@ Resources:
       FromPort: '443'
       ToPort: '443'
       CidrIp: !Ref AllowIPs
-	  
+   
   AlertsTopic: 
     Type: AWS::SNS::Topic
     Properties: 
