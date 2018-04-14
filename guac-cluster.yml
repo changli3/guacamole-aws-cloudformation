@@ -57,7 +57,7 @@ Parameters:
   AllocatedStorage:
     Type: Number
     Description: Allocated Storage for RDS in GB
-    Default: 1
+    Default: 20
 
   SnapshotOnDelete:
     Description: Create a Snapshot on Delete?
@@ -78,7 +78,7 @@ Parameters:
   BackupRetentionPeriod:
     Description: Enter Backup Retention Period in Days.
     Type: Number
-    Default: '7'
+    Default: '1'
 
   MultiAvailabilityZone:
     Description: Enable Multi Availability Zones?
@@ -168,42 +168,6 @@ Resources:
         Fn::Sub: ${AWS::StackName}-Sg
       VpcId: !Ref VpcId
 
-  SgAllTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'Sg'
-      IpProtocol: tcp
-      FromPort: '0'
-      ToPort: '65535'
-      CidrIp: !Ref Sg
-
-  SgAllTrafficports2:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'Sg'
-      IpProtocol: tcp
-      FromPort: '0'
-      ToPort: '65535'
-      CidrIp: !Ref GuacamoleSecurityGroup
-   
-  SgHTTPTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'Sg'
-      IpProtocol: tcp
-      FromPort: '80'
-      ToPort: '80'
-      CidrIp: !Ref AllowIPs
-
-  SgHTTPSTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'Sg'
-      IpProtocol: tcp
-      FromPort: '443'
-      ToPort: '443'
-      CidrIp: !Ref AllowIPs
-   
   AlertsTopic: 
     Type: AWS::SNS::Topic
     Properties: 
@@ -441,26 +405,10 @@ Resources:
       GroupDescription: Elb Allowed Ports
       VpcId: !Ref VpcId
 
-  GuacamoleSecurityGroupElbAllTrafficports:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'GuacamoleSecurityGroup'
-      IpProtocol: tcp
-      FromPort: '0'
-      ToPort: '65535'
-      CidrIp: !Ref Sg
-
-  GuacamoleSecurityGroupElbAllTrafficports2:
-    Type: AWS::EC2::SecurityGroupIngress
-    Properties:
-      GroupId: !Ref 'GuacamoleSecurityGroup'
-      IpProtocol: tcp
-      FromPort: '0'
-      ToPort: '65535'
-      CidrIp: !Ref GuacamoleSecurityGroup
-
   GuacamoleSecurityGroupElbHttpTrafficports:
     Type: AWS::EC2::SecurityGroupIngress
+    DependsOn:
+    - GuacamoleSecurityGroup
     Properties:
       GroupId: !Ref 'GuacamoleSecurityGroup'
       IpProtocol: tcp
@@ -470,6 +418,8 @@ Resources:
 
   GuacamoleSecurityGroupElbAllTrafficports:
     Type: AWS::EC2::SecurityGroupIngress
+    DependsOn:
+    - GuacamoleSecurityGroup
     Properties:
       GroupId: !Ref 'GuacamoleSecurityGroup'
       IpProtocol: tcp
@@ -479,14 +429,17 @@ Resources:
 
   ElbGuacamole:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
+    DependsOn:
+    - GuacamoleSecurityGroup
+    - Sg
     Properties:
       LoadBalancerName:
         Fn::Sub: ${AWS::StackName}
-      Scheme: internet
+      Scheme: internet-facing
       Subnets: 
       - !Ref SubnetID1
       - !Ref SubnetID2
-      SecurityGroups: [ !Ref GuacamoleSecurityGroup ]
+      SecurityGroups: [ !Ref GuacamoleSecurityGroup, !Ref Sg ]
       HealthCheck:
         Target:
           Fn::Join:
