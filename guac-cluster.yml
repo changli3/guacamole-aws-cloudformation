@@ -36,6 +36,8 @@ Parameters:
 
   VpcId:
     Type: AWS::EC2::VPC::Id
+  Sg:
+    Type: AWS::EC2::SecurityGroup
 
   AllowIPs:
     Type: String
@@ -126,7 +128,6 @@ Resources:
     DeletionPolicy: Snapshot
     DependsOn:
     - DbSubnetGroup
-    - Sg
     Properties:
       AllocatedStorage:
         Ref: AllocatedStorage
@@ -160,13 +161,6 @@ Resources:
       - Key: Name
         Value:
           Ref: AWS::StackName
-
-  Sg:
-    Type: AWS::EC2::SecurityGroup
-    Properties:
-      GroupDescription:
-        Fn::Sub: ${AWS::StackName}-Sg
-      VpcId: !Ref VpcId
 
   AlertsTopic: 
     Type: AWS::SNS::Topic
@@ -431,7 +425,6 @@ Resources:
     Type: AWS::ElasticLoadBalancing::LoadBalancer
     DependsOn:
     - GuacamoleSecurityGroup
-    - Sg
     Properties:
       LoadBalancerName:
         Fn::Sub: ${AWS::StackName}

@@ -58,7 +58,7 @@ Save the connection, from dropdown of the user name, select "Home" and then clic
 Launch the cluster with the template guac-cluster.yml. Please note that there will be autoscaling group and RDS instances.
 
 ```
-aws cloudformation deploy --stack-name GuacamoleCluster01 --parameter-overrides Ami=ami-43a15f3e  InstanceType=t2.small  SubnetID1=subnet-09f8ca52 SubnetID2=subnet-e0eb9685   SecurityGroupId=sg-58e1fc3d  KeyName=TreaEBSLab  mysqlRootUser=mysqlRootUser  mysqlRootUserPassword=mysqlRootUserPassword GuacadminUser=guacaadmin  GuacadminPassword=guacaadmin VpcId=vpc-b3870dd6 --capabilities CAPABILITY_IAM --template-file guac-cluster.yml
+aws cloudformation deploy --stack-name GuacamoleCluster01 --parameter-overrides Ami=ami-43a15f3e  InstanceType=t2.small  SubnetID1=subnet-09f8ca52 SubnetID2=subnet-e0eb9685   SecurityGroupId=sg-58e1fc3d  KeyName=TreaEBSLab  mysqlRootUser=mysqlRootUser  mysqlRootUserPassword=mysqlRootUserPassword GuacadminUser=guacaadmin  GuacadminPassword=guacaadmin VpcId=vpc-b3870dd6 Sg=sg-58e1fc3d --capabilities CAPABILITY_IAM --template-file guac-cluster.yml
 ```
 
 # Launch Guacamole Server Cluster with RDS/LDAP Backend and SAML SSO

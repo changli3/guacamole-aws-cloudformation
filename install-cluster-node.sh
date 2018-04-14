@@ -66,12 +66,16 @@ echo "mysql-password: $MYSQLROOTPASSWORD" >> /etc/guacamole/guacamole.properties
 rm -rf /usr/share/tomcat8/.guacamole
 ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
 
-if [ $(mysqlshow DB 1>/dev/null 2>/dev/null) -ne 0 ]; then
+RESULT=`mysqlshow -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT"  guacamole_db | grep -v Wildcard | grep -o guacamole_db`
+
+if [ "$RESULT" == "guacamole_db" ]; then
+    x=1
+else
 	mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" -e "create database guacamole_db;"
 
 	cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" guacamole_db
 
-	mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))"
+	mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))" 
 fi
 
 systemctl restart guacd
