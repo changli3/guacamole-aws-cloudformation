@@ -41,7 +41,125 @@ Parameters:
     Type: String
     Default: 0.0.0.0/0
 
+  mysqlRootUser:
+    Type: String
+    Default: mysqlRootUser
+  mysqlRootUserPassword:
+    Type: String
+    Default: mysqlRootUserPassword
+  GuacadminUser:
+    Type: String
+    Default: guacaadmin
+  GuacadminPassword:
+    Type: String
+    Default: guacaadmin
+
+  AllocatedStorage:
+    Description: Allocated Storage for RDS in GB
+    Default: 1
+
+  SnapshotOnDelete:
+    Description: Create a Snapshot on Delete?
+    Type: String
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+
+  AutoMinorVersionUpgrade:
+    Description: Allow Automatic Minor Version Upgrades?
+    Type: String
+    Default: 'true'
+    AllowedValues:
+    - 'true'
+    - 'false'
+
+  BackupRetentionPeriod:
+    Description: Enter Backup Retention Period in Days.
+    Type: Number
+    Default: '7'
+
+  MultiAvailabilityZone:
+    Description: Enable Multi Availability Zones?
+    Type: String
+    Default: 'false'
+    AllowedValues:
+    - 'true'
+    - 'false'
+
+  ProvisionedIopsValue:
+    Description: "(Skip if Not Using Provisioned IOPS) Set Provisioned IOPS 1000-30000."
+    Type: Number
+    Default: '1000'
+    MinValue: '1000'
+    MaxValue: '30000'
+
+  RDSInstanceType:
+    Description: Select Instance Type.
+    Type: String
+    Default: db.t2.small
+  TcpPort:
+    Description: Enter RDS Listening TCP Port number.
+    Type: Number
+    Default: '3306'
+
+
 Resources:
+  DbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription:
+        Fn::Join:
+        - ''
+        - - 'RDS Subnet Group for '
+          - Ref: AWS::StackName
+      SubnetIds:
+      - Ref: SubnetID1
+      - Ref: SubnetID2
+      Tags:
+      - Key: Name
+        Value:
+          Ref: AWS::StackName
+  DbInstance:
+    Type: AWS::RDS::DBInstance
+    DeletionPolicy: Snapshot
+    DependsOn:
+    - DbSubnetGroup
+    - Sg
+    Properties:
+      AllocatedStorage:
+        Ref: AllocatedStorage
+      AllowMajorVersionUpgrade: 'false'
+      AutoMinorVersionUpgrade:
+        Ref: AutoMinorVersionUpgrade
+      BackupRetentionPeriod:
+        Ref: BackupRetentionPeriod
+      DBInstanceClass:
+        Ref: RDSInstanceType
+      DBInstanceIdentifier:
+        Ref: AWS::StackName
+      DBSubnetGroupName:
+        Ref: DbSubnetGroup
+      Engine: MySQL
+      EngineVersion: '5.7'
+      MasterUsername:
+        Ref: mysqlRootUser
+      MasterUserPassword:
+        Ref: mysqlRootUserPassword
+      MultiAZ:
+        Ref: MultiAvailabilityZone
+      Port:
+        Ref: TcpPort
+      PubliclyAccessible: 'false'
+      StorageEncrypted: 'false'
+      StorageType: gp2
+      VPCSecurityGroups:
+      - Ref: Sg
+      Tags:
+      - Key: Name
+        Value:
+          Ref: AWS::StackName
+
   Sg:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -180,6 +298,7 @@ Resources:
 
   Lc:
     Type: AWS::AutoScaling::LaunchConfiguration
+    DependsOn: DbInstance
     Properties:
       ImageId:
         Ref: Ami
@@ -201,7 +320,7 @@ Resources:
           Fn::Sub: |
             #cloud-config
             runcmd:
-            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootPassword} ${mysqlGuacaPassword} ${GuacadminUser} ${GuacadminPassword}
+            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootUser} ${mysqlRootUserPassword} ${GuacadminUser} ${GuacadminPassword}  ${!GetAtt DbInstance.Endpoint.Address} ${!GetAtt DbInstance.Endpoint.Port}
 
   CpuUtilization:
     Type: AWS::AutoScaling::ScalingPolicy

@@ -1,22 +1,18 @@
 # install required packages
 apt -y update
 apt -y upgrade
-apt -y dist-upgrade
 
-
-
-export MYSQLROOTPASSWORD="$1"
-export GUACAPASSWORD="$2"
+export MYSQLROOTUSER="$1"
+export MYSQLROOTPASSWORD="$2"
 export GUACADMIN="$3"
 export GUACADMINPASSWORD="$4"
+export DBHOST="$5"
+export DBPORT="$6"
 
-
-debconf-set-selections <<< "mysql-server mysql-server/root_password password $MYSQLROOTPASSWORD"
-debconf-set-selections <<< "mysql-server mysql-server/root_password_again password $MYSQLROOTPASSWORD"
 
 apt -y install libcairo2-dev libjpeg-turbo8-dev libpng12-dev libossp-uuid-dev libfreerdp-dev libpango1.0-dev libssh2-1-dev libtelnet-dev \
 libvncserver-dev libpulse-dev libssl-dev libvorbis-dev libwebp-dev git build-essential autoconf libtool tomcat8 \
-tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-server mysql-client mysql-common mysql-utilities libpulse-dev \
+tomcat8-admin tomcat8-common tomcat8-docs tomcat8-user maven mysql-client mysql-common mysql-utilities libpulse-dev \
 libvorbis-dev freerdp ghostscript wget
 
 # create directories
@@ -60,33 +56,23 @@ cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /etc/guacamol
 ln -s /usr/local/lib/freerdp/* /usr/lib/x86_64-linux-gnu/freerdp/.
 
 # configure mysql for guacamole
-echo "mysql-hostname: localhost" > /etc/guacamole/guacamole.properties
-echo "mysql-port: 3306" >> /etc/guacamole/guacamole.properties
+echo "mysql-hostname: $DBHOST" > /etc/guacamole/guacamole.properties
+echo "mysql-port: $DBPORT" >> /etc/guacamole/guacamole.properties
 echo "mysql-database: guacamole_db" >> /etc/guacamole/guacamole.properties
-echo "mysql-username: guacamole_user" >> /etc/guacamole/guacamole.properties
-echo "mysql-password: $GUACAPASSWORD" >> /etc/guacamole/guacamole.properties
+echo "mysql-username: $MYSQLROOTUSER" >> /etc/guacamole/guacamole.properties
+echo "mysql-password: $MYSQLROOTPASSWORD" >> /etc/guacamole/guacamole.properties
 
 # link guacamole dir to tomcat
 rm -rf /usr/share/tomcat8/.guacamole
 ln -s /etc/guacamole /usr/share/tomcat8/.guacamole
 
+if [ $(mysqlshow DB 1>/dev/null 2>/dev/null) -ne 0 ]; then
+	mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" -e "create database guacamole_db;"
 
-echo "
-create database guacamole_db;
-create user 'guacamole_user'@'localhost' identified by '$GUACAPASSWORD';
-GRANT SELECT,INSERT,UPDATE,DELETE ON guacamole_db.* TO 'guacamole_user'@'localhost';
-flush privileges;
-quit
-" | tee init_db.sql
+	cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" guacamole_db
 
-# provision the guacamole database
-mysql -u root --password="$MYSQLROOTPASSWORD" < init_db.sql
-
-cat /opt/incubator-guacamole-client/extensions/guacamole-auth-jdbc/modules/guacamole-auth-jdbc-mysql/schema/*.sql | mysql -u root --password="$MYSQLROOTPASSWORD" guacamole_db
-
-mysql -u root --password="$MYSQLROOTPASSWORD" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))"
+	mysql -u $MYSQLROOTUSER --password="$MYSQLROOTPASSWORD" --host="$DBHOST"  --port="$DBPORT" guacamole_db -e "update guacamole_user set username='$GUACADMIN' ,password_hash=UNHEX(SHA2(CONCAT('$GUACADMINPASSWORD', HEX(password_salt)), 256))"
+fi
 
 systemctl restart guacd
 systemctl restart tomcat8
-
-iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to 8080 
