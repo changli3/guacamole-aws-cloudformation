@@ -410,11 +410,11 @@ Resources:
           - ''
           - - 'HTTP:'
             - '8080'
-            - "/guacamole"
-        HealthyThreshold: '3'
+            - "/guacamole/"
+        HealthyThreshold: '2'
         UnhealthyThreshold: '5'
-        Interval: '30'
-        Timeout: '5'
+        Interval: '20'
+        Timeout: '10'
       Listeners:
       - LoadBalancerPort: '80'
         InstancePort: '8080'
