@@ -279,7 +279,7 @@ Resources:
           Fn::Sub: |
             #cloud-config
             runcmd:
-            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootUser} ${mysqlRootUserPassword} ${GuacadminUser} ${GuacadminPassword}  ${"Fn::GetAtt": ["DbInstance","Endpoint.Address"]} ${"Fn::GetAtt": ["DbInstance","Endpoint.Port"]}
+            - curl -s -L https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/install-cluster-node.sh | sudo bash -s ${mysqlRootUser} ${mysqlRootUserPassword} ${GuacadminUser} ${GuacadminPassword}  ${DbInstance.Endpoint.Address} ${DbInstance.Endpoint.Port}
 
   CpuUtilization:
     Type: AWS::AutoScaling::ScalingPolicy
