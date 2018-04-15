@@ -51,7 +51,7 @@ Save the connection, from dropdown of the user name, select "Home" and then clic
 
 # Launch Guacamole Server Cluster with RDS Backend
 
-In thi sarchitectue, I setup a group of Autoscaled Guacamole Servers and in the backend, a shared RDS database. While this works for a lot people but not us since we need to support SAML/PIV authentication.
+In this architectue, I setup a group of Autoscaled Guacamole Servers and in the backend, a shared RDS database. While this works for a lot people but not us since we need to support SAML/PIV authentication.
 ![Guacamole Cluster](https://raw.githubusercontent.com/changli3/guacamole-aws-cloudformation/master/cluster.JPG "Guacamole Cluster")
 
 Launch the cluster with the template guac-cluster.yml -
